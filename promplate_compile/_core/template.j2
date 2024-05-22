@@ -1,0 +1,46 @@
+# type: ignore
+
+from collections import ChainMap
+from typing import TYPE_CHECKING, Any, ClassVar, TypedDict
+
+if TYPE_CHECKING:
+    from promplate.prompt.template import Component
+else:
+    Component = object
+
+class ChainMap(ChainMap, dict): ...
+
+{{ template.get_script(indent_str="    ", sync=1).replace("render", "_", 1) }}
+
+render_code = _.__code__
+
+{{ template.get_script(indent_str="    ", sync=0).replace("render", "_", 1) }}
+
+arender_code = _.__code__
+
+class Template(Component):
+    Context = TypedDict("Context", { {{
+        from promplate_inspect import find_input_variables_in_template
+        ", ".join( f'"{i}": Any' for i in find_input_variables_in_template(template) )
+    }} }, total=False) | dict[str, Any]
+
+    context: ClassVar["Template.Context"] = {}
+
+    @staticmethod
+    def render(ctx: "Template.Context" | None = None) -> str:
+        return eval(render_code, (ChainMap({}, context) if ctx is None else ChainMap({}, ctx, Template.context)))
+
+    @staticmethod
+    async def arender(ctx: "Template.Context" | None = None) -> str:
+        return await eval(arender_code, (ChainMap({}, context) if ctx is None else ChainMap({}, ctx, Template.context)))
+
+if TYPE_CHECKING:
+    template = Template()
+else:
+    template = Template
+
+render = template.render
+arender = template.arender
+context = template.context
+
+__all__ = ("render", "arender", "context", "template")
