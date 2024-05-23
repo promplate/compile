@@ -27,11 +27,11 @@ class Template(Component):
     context: ClassVar["Template.Context"] = {}
 
     @staticmethod
-    def render(ctx: "Template.Context" | None = None) -> str:
+    def render(ctx: "Template.Context | None" = None) -> str:
         return eval(render_code, (ChainMap({}, context) if ctx is None else ChainMap({}, ctx, Template.context)))
 
     @staticmethod
-    async def arender(ctx: "Template.Context" | None = None) -> str:
+    async def arender(ctx: "Template.Context | None" = None) -> str:
         return await eval(arender_code, (ChainMap({}, context) if ctx is None else ChainMap({}, ctx, Template.context)))
 
 if TYPE_CHECKING:
