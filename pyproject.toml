@@ -1,6 +1,7 @@
 [project]
 name = "promplate-compile"
 version = "0.0.0"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["promplate>=0.3.4.4,<0.4", "promplate-inspect~=0.0.2.2"]
 
