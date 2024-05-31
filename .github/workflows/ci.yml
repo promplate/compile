@@ -14,11 +14,11 @@ jobs:
           python-version: 3.12
 
       - name: Install dependencies
+        env: { UV_SYSTEM_PYTHON: true }
         run: |
-          pip install -U pip
-          pip install .
-          pip install ruff watchfiles
-          npm install -g pyright
+          pip install uv && uv pip install pdm
+          pdm export --pyproject --dev --editable-self | uv pip install -r -
+          yarn global add pyright
 
       - name: Check code quality
         run: |
